@@ -1,8 +1,9 @@
+var env = require('../../.env.js');
+
 let fs = require('fs');
 Tail = require('tail').Tail;
 
-let log_file = process.argv[2] || 'api.access';
-let log_path = `${__dirname}/../../logs/${log_file}.log`;
+let log_path = env.ethereum_log;
 let print_history = (process.argv[3] && (process.argv[3] == '--history'));
 
 if (!fs.existsSync(log_path))
