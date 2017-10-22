@@ -5,5 +5,7 @@ module.exports = {
     // string or array of ip addresses which are allowed to use this api
     "allowed_ip": "*",
     // path to the ipc file
-    "ipc_path": "/opt/ethereum/data/geth.ipc"
+    "ipc_path": "/opt/ethereum/data/geth.ipc",
+    // ethereum log file
+    "ethereum_log": "/opt/ethereum/logs/miner-worker.log"
 };

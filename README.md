@@ -11,5 +11,5 @@ npm run-scripts compileanddeploy
 
 Run
 ```
-npm run
+npm start
 ```
