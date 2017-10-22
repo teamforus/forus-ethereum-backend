@@ -1,5 +1,5 @@
 var fs = require("fs");
-var access = fs.createWriteStream(__dirname + '/../../logs/api.access.log');
+var access = fs.createWriteStream(__dirname + '/../api.access.log');
 
 var logger = {
     log: function() {
