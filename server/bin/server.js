@@ -9,9 +9,11 @@ let logger = require('../core/logger.js');
 var core = require('../core/core.js');
 var sponsor = require('../storage/sponsor.json') || {};
 
-var port = 8500;
-
 var env = require('../../.env.js');
+
+var host = env.host || 'localhost'
+var port = env.port || 8500;
+
 let apiKey = env.api_key;
 let allowedIp = env.allowed_ip;
 
@@ -211,10 +213,11 @@ app.get('/api/account/:address/balance', logEndpoint, function(req, res) {
     });
 });
 
-app.listen(port, 'localhost', function() {
+app.listen(port, host, function() {
     logger.log('Node server started at port: ', port)
 }).on('connection', function(socket) {
     logger.log("- " + colors.green("A new connection was made by a client."));
     // 3000 second timeout.
     socket.setTimeout(3000 * 1000);
 });
+111
