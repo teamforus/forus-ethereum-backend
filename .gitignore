@@ -2,6 +2,7 @@
 /logs/*
 !/data
 !/logs
+.env.js
 
 # Compiled source #
 ###################

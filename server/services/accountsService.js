@@ -43,6 +43,17 @@ let AccountsService = function(web3) {
         });
     };
 
+    self.importWallet = function(private_key, passphrase) {
+        return new Promise(function(resolve, reject) {
+            web3.personal.importRawKey(private_key, passphrase, function(err, address) {
+                if (err)
+                    return reject(err);
+                
+                resolve(address);
+            })
+        });
+    };
+
     self.transferEther = function(address, amount) {
         return new Promise(function(resolve, reject) {
             web3.personal.sendTransaction({

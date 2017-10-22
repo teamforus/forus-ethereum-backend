@@ -1,5 +1,6 @@
 var sponsor = require('../storage/sponsor.json') || false;
 let coinContractService = require('./coinContractService');
+let logger = require('../core/logger.js');
 
 let BalanceService = function(web3) {
     var self = this;
@@ -26,6 +27,7 @@ let BalanceService = function(web3) {
     self.getBalance = function(public_key) {
         return new Promise(function(resolve, reject) {
             getContract().then(function(contract) {
+                logger.log('public_key', public_key);
                 contract.balanceOf(public_key, function(err, data) {
                     if (err)
                         reject(err);
@@ -36,10 +38,11 @@ let BalanceService = function(web3) {
         });
     };
 
-    self.fundAccount = function(public_key, funds) {
+    self.fundAccount = function(public_key, tokens) {
         return new Promise(function(resolve, reject) {
             getContract().then(function(contract) {
-                contract.fundWallet(public_key, funds, { from: sponsor.public }, function(err, transactionHash) {
+                logger.log('public_key, tokens', public_key, tokens);
+                contract.fundWallet(public_key, tokens, { from: sponsor.public }, function(err, transactionHash) {
                     if (err)
                         return reject(err);
 

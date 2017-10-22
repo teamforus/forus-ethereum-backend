@@ -58,22 +58,44 @@ let getBalance = function(targetAddress) {
     });
 };
 
-let fundAccount = function(targetAddress, funds) {
+let fundAccount = function(targetAddress, tokens) {
     return new Promise(function(resolve, reject) {
-        balanceService.fundAccount(targetAddress, funds).then(function(block) {
+        balanceService.fundAccount(targetAddress, tokens).then(function(block) {
+            logger.log("\tThe transaction block number: ", colors.green(block.blockNumber), block, tokens);
+            resolve(block);
+        }, reject);
+    });
+};
+
+
+let transferEther = function(targetAddress, ether) {
+    return new Promise(function(resolve, reject) {
+        accountsService.transferEther(targetAddress, ether).then(function(block) {
             logger.log("\tThe transaction block number: ", colors.green(block.blockNumber));
             resolve(block);
         }, reject);
     });
 };
 
-let newAccount = function(password, funds) {
+let newAccount = function(password, tokens) {
     return new Promise(function(resolve, reject) {
-        accountsService.newAccount(password, funds).then(function(address) {
+        accountsService.newAccount(password, tokens).then(function(address) {
             logger.log(
                 "\tNew account created:",
                 "\n\t\tpublic: " + colors.green(address) +
                 "\n\t\tprivate: " + colors.green(password));
+            resolve(address);
+        }, reject);
+    });
+};
+
+let importWallet = function(private_key, passphrase) {
+    return new Promise(function(resolve, reject) {
+        accountsService.importWallet(private_key, passphrase).then(function(address) {
+            logger.log(
+                "\tNew account created:",
+                "\n\t\tpublic: " + colors.green(address) +
+                "\n\t\tprivate: " + colors.green(passphrase));
             resolve(address);
         }, reject);
     });
@@ -86,6 +108,8 @@ module.exports = {
     refundPayment: refundPayment,
     getBalance: getBalance,
     fundAccount: fundAccount,
+    transferEther: transferEther,
+    importWallet: importWallet,
     newAccount: newAccount,
     web3: web3,
     services: {

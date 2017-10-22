@@ -11,6 +11,13 @@ var sponsor = require('../storage/sponsor.json') || {};
 
 var port = 8500;
 
+var env = require('../../.env.js');
+let apiKey = env.api_key;
+let allowedIp = env.allowed_ip;
+
+if (typeof allowedIp == 'string')
+    allowedIp = [allowedIp];
+
 // to support JSON-encoded bodies
 app.use(bodyParser.json());
 
@@ -23,6 +30,25 @@ let logEndpoint = function(req, res, next) {
     logger.log("Endpoint reached:", colors.green(req.route.path));
     next();
 };
+app.use(function(req, res, next) {
+    if (req.get('Api-Key') != apiKey) {
+        return res.status(401).send({
+            "error": "access-forbiden",
+            "message": "Access forbiden!",
+        });
+    }
+
+    if (allowedIp.indexOf("*") == -1) {
+        if (allowedIp.indexOf(req.ip) == -1) {
+            return res.status(401).send({
+                "error": "access-forbiden",
+                "message": "Access forbiden!",
+            });
+        }
+    }
+    
+    next();
+});
 
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/', logEndpoint, function(req, res) {
@@ -31,48 +57,57 @@ app.get('/', logEndpoint, function(req, res) {
     });
 })
 
-app.post('/api/voucher/batch', logEndpoint, function(req, res) {
-    let vouchers = req.body.data;
-    let addresses = {};
-
-    if (!vouchers)
-        return res.status(403).send({
-            error: "No data!"
-        });
-
-    logger.log(colors.green(
-        "Batch voucher creation:", Object.keys(vouchers).length + "."));
-
-    for (var prop in vouchers) {
-        let voucher = vouchers[prop];
-
-        (function(prop) {
-            core.newAccount(voucher.private, voucher.funds * 100).then(function(address) {
-                addresses[prop] = address;
-
-                logger.log(colors.green(`Voucher ${Object.keys(addresses).length} from ${Object.keys(vouchers).length} created.`));
-
-                if (Object.keys(vouchers).length == Object.keys(addresses).length) {
-                    res.send({
-                        data: addresses
-                    });
-                }
-            });
-        })(prop);
-    }
-});
-
-app.post('/api/account', logEndpoint, function(req, res) {
+// Depricated
+/*app.post('/api/account', logEndpoint, function(req, res) {
     let _private = req.body.private;
     let _funds = parseInt(req.body.funds);
 
     account = core.newAccount(_private, isNaN(_funds) ? false : (_funds * 100));
-    
+
     account.then(function(address) {
         res.send({
             address: address
         });
-    }, console.log);
+    }, logger.log);
+});*/
+
+app.post('/api/import-wallet', logEndpoint, function(req, res) {
+    let wallet = req.body.wallet;
+
+    logger.log('Import wallet ' + wallet.address + '.');
+    core.importWallet(wallet.private_key, wallet.passphrase).then(function(block) {
+        res.send({
+            block: block
+        });
+    }, logger.log);
+});
+
+app.post('/api/fund-ether', logEndpoint, function(req, res) {
+    let wallet = req.body.wallet;
+    let amount = parseInt(req.body.amount);
+
+    logger.log('Fund ether for ' + wallet.address + ' (' + amount + 'eth.)');
+    account = core.transferEther(wallet.address, amount);
+    account.then(function(block) {
+        res.send({
+            block: block
+        });
+    }, logger.log);
+});
+
+app.post('/api/fund-tokens', logEndpoint, function(req, res) {
+    let wallet = req.body.wallet;
+    let amount = parseInt(req.body.amount) * 100;
+
+    logger.log(req.body.amount);
+
+    logger.log('Fund tokens for ' + wallet.address + ' (' + amount + 'tokens)');
+    account = core.fundAccount(wallet.address, amount);
+    account.then(function(block) {
+        res.send({
+            block: block
+        });
+    }, logger.log);
 });
 
 app.get('/api/shop-keeper/:address/state', logEndpoint, function(req, res) {
