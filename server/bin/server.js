@@ -32,6 +32,7 @@ let logEndpoint = function(req, res, next) {
     logger.log("Endpoint reached:", colors.green(req.route.path));
     next();
 };
+
 app.use(function(req, res, next) {
     if (req.get('Api-Key') != apiKey) {
         return res.status(401).send({
@@ -81,7 +82,13 @@ app.post('/api/import-wallet', logEndpoint, function(req, res) {
         res.send({
             block: block
         });
-    }, logger.log);
+    }, function(data) {
+        logger.log(arguments);
+        
+        res.status(500).send({
+            "message": arguments,
+        });
+    });
 });
 
 app.post('/api/fund-ether', logEndpoint, function(req, res) {
@@ -94,7 +101,13 @@ app.post('/api/fund-ether', logEndpoint, function(req, res) {
         res.send({
             block: block
         });
-    }, logger.log);
+    }, function(data) {
+        logger.log(arguments);
+        
+        res.status(500).send({
+            "message": arguments,
+        });
+    });
 });
 
 app.post('/api/fund-tokens', logEndpoint, function(req, res) {
@@ -109,7 +122,13 @@ app.post('/api/fund-tokens', logEndpoint, function(req, res) {
         res.send({
             block: block
         });
-    }, logger.log);
+    }, function(data) {
+        logger.log(arguments);
+        
+        res.status(500).send({
+            "message": arguments,
+        });
+    });
 });
 
 app.get('/api/shop-keeper/:address/state', logEndpoint, function(req, res) {
@@ -118,6 +137,12 @@ app.get('/api/shop-keeper/:address/state', logEndpoint, function(req, res) {
     core.checkShopStatus(address).then(function(state) {
         res.send({
             state: state
+        });
+    }, function(data) {
+        logger.log(arguments);
+        
+        res.status(500).send({
+            "message": arguments,
         });
     });
 });
@@ -131,6 +156,12 @@ app.post('/api/shop-keeper/:address/state', logEndpoint, function(req, res) {
     core.changeShoperStatus(address, state).then(function(block) {
         res.send({
             state: state
+        });
+    }, function(data) {
+        logger.log(arguments);
+        
+        res.status(500).send({
+            "message": arguments,
         });
     });
 });
@@ -164,7 +195,25 @@ app.post('/api/transaction/request-funds', logEndpoint, function(req, res) {
                 res.send({
                     blockId: block.blockNumber
                 });
+            }, function(data) {
+                logger.log(arguments);
+                
+                res.status(500).send({
+                    "message": arguments,
+                });
             });
+        }, function(data) {
+            logger.log(arguments);
+            
+            res.status(500).send({
+                "message": arguments,
+            });
+        });
+    }, function(data) {
+        logger.log(arguments);
+        
+        res.status(500).send({
+            "message": arguments,
         });
     });
 });
@@ -198,7 +247,25 @@ app.post('/api/transaction/refund', logEndpoint, function(req, res) {
                 res.send({
                     blockId: block.blockNumber
                 });
+            }, function(data) {
+                logger.log(arguments);
+                
+                res.status(500).send({
+                    "message": arguments,
+                });
             });
+        }, function(data) {
+            logger.log(arguments);
+            
+            res.status(500).send({
+                "message": arguments,
+            });
+        });
+    }, function(data) {
+        logger.log(arguments);
+        
+        res.status(500).send({
+            "message": arguments,
         });
     });
 });
@@ -209,6 +276,12 @@ app.get('/api/account/:address/balance', logEndpoint, function(req, res) {
     core.getBalance(address).then(function(balance) {
         res.send({
             balance: balance / 100
+        });
+    }, function(data) {
+        logger.log(arguments);
+        
+        res.status(500).send({
+            "message": arguments,
         });
     });
 });
