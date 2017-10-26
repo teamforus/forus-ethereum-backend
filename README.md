@@ -6,7 +6,7 @@ Install dependencies
 ```
 npm i
 
-npm run-scripts compileanddeploy
+npm run-script compileanddeploy
 ```
 
 Run
